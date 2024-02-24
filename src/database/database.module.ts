@@ -14,7 +14,7 @@ import { MongooseModule } from '@nestjs/mongoose';
         const host = configService.get<string>('DATABASE_HOST');
 
         return {
-          uri: `mongodb+srv://${user}:${password}@${host}/?retryWrites=true&w=majority&appName=${name}`,
+          uri: `mongodb+srv://${user}:${password}@${host}/${name}?retryWrites=true&w=majority&appName=${name}`,
         };
       },
     }),
