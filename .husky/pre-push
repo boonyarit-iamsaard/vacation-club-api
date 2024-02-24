@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Check for build errors
+echo "🔎 Checking build...";
+pnpm build ||
+(
+  echo "❌ Build errors detected. Please fix and commit again.";
+  false;
+)
+
+# If we get here, all checks passed
+echo "✅ All checks passed. Ready to push.";

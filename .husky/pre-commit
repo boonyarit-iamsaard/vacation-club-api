@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Check for formatting
+echo "🔎 Checking formatting...";
+pnpm format:check ||
+(
+  echo "❌ Formatting errors detected. Please run 'pnpm format' and commit again.";
+  false;
+)
+
+# Check for linting
+echo "🔎 Checking linting...";
+pnpm lint:check ||
+(
+  echo "❌ Linting errors detected. Please run 'pnpm lint' and commit again.";
+  false;
+)
+
+# Check for type errors
+echo "🔎 Checking type errors...";
+pnpm typecheck ||
+(
+  echo "❌ Type errors detected. Please fix and commit again.";
+  false;
+)
+
+# If we get here, all checks passed
+echo "✅ All checks passed. Ready to commit.";
