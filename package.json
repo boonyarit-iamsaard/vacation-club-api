@@ -8,7 +8,7 @@
     "node": ">=18.0.0",
     "npm": "please use pnpm",
     "yarn": "please use pnpm",
-    "pnpm": ">=6.0.0"
+    "pnpm": ">=8.0.0"
   },
   "prisma": {
     "schema": "src/database/schema.prisma"
@@ -92,5 +92,6 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "packageManager": "pnpm@8.15.4"
 }
