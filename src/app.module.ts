@@ -11,10 +11,8 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        DATABASE_USER: Joi.string().required(),
-        DATABASE_PASSWORD: Joi.string().required(),
-        DATABASE_NAME: Joi.string().required(),
-        DATABASE_HOST: Joi.string().required(),
+        DATABASE_URL: Joi.string().required(),
+        PORT: Joi.number().default(3000),
       }),
     }),
     DatabaseModule,
