@@ -9,13 +9,12 @@ COPY --chown=node:node prisma ./prisma
 
 FROM base AS dev-deps
 RUN pnpm fetch && pnpm install -r --offline
-RUN npx prisma generate
+RUN pnpm prisma generate
 
 FROM base AS prod-deps
 ENV NODE_ENV=production
 COPY --chown=node:node .husky ./.husky
 RUN pnpm fetch --prod && pnpm install -r --offline --prod
-RUN npx prisma generate
 
 FROM base AS dev
 COPY --chown=node:node --from=dev-deps /usr/src/app/node_modules ./node_modules
