@@ -8,12 +8,13 @@ COPY --chown=node:node package.json pnpm-lock.yaml ./
 COPY --chown=node:node prisma ./prisma
 
 FROM base AS dev-deps
-RUN pnpm fetch && pnpm install --frozen-lockfile
+RUN pnpm fetch && pnpm install -r --offline
 RUN pnpm prisma generate
 
 FROM base AS prod-deps
 ENV NODE_ENV=production
-RUN pnpm fetch --prod && pnpm install --frozen-lockfile --prod
+COPY --chown=node:node .husky ./.husky
+RUN pnpm fetch --prod && pnpm install -r --offline --prod
 RUN pnpm prisma generate
 
 FROM base AS dev
