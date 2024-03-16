@@ -5,6 +5,7 @@ RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 WORKDIR /usr/src/app
 RUN chown -R node:node /usr/src/app
 COPY --chown=node:node package.json pnpm-lock.yaml ./
+COPY --chown=node:node .husky ./.husky
 COPY --chown=node:node prisma ./prisma
 
 FROM base AS dev-deps
@@ -13,7 +14,6 @@ RUN pnpm prisma generate
 
 FROM base AS prod-deps
 ENV NODE_ENV=production
-COPY --chown=node:node .husky ./.husky
 RUN pnpm fetch --prod && pnpm install -r --offline --prod
 
 FROM base AS dev
