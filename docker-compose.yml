@@ -9,6 +9,7 @@ services:
       target: dev
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
     env_file:
       - .env
     command: pnpm start:dev
