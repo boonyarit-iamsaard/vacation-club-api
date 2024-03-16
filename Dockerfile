@@ -12,6 +12,7 @@ RUN pnpm fetch && pnpm install -r --offline
 RUN pnpm prisma generate
 
 FROM base AS prod-deps
+ENV NODE_ENV=production
 RUN pnpm fetch --prod && pnpm install -r --offline --prod
 RUN pnpm prisma generate
 
