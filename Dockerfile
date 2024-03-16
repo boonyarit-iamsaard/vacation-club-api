@@ -8,12 +8,12 @@ COPY --chown=node:node package.json pnpm-lock.yaml ./
 COPY --chown=node:node prisma ./prisma
 
 FROM base AS dev-deps
-RUN pnpm fetch && pnpm install --forzen-lockfile
+RUN pnpm fetch && pnpm install --frozen-lockfile
 RUN pnpm prisma generate
 
 FROM base AS prod-deps
 ENV NODE_ENV=production
-RUN pnpm fetch --prod && pnpm install --forzen-lockfile --prod
+RUN pnpm fetch --prod && pnpm install --frozen-lockfile --prod
 RUN pnpm prisma generate
 
 FROM base AS dev
