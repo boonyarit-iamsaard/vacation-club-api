@@ -13,6 +13,7 @@ RUN pnpm prisma generate
 
 FROM base AS prod-deps
 ENV NODE_ENV=production
+ENV HUSKY=0
 RUN pnpm fetch --prod && pnpm install -r --offline --prod
 RUN pnpm prisma generate
 
