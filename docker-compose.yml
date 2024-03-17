@@ -14,4 +14,4 @@ services:
       - .env
     command: pnpm start:dev
     ports:
-      - 3000:3000
+      - "3000:3000"
