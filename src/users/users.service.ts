@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as argon2 from 'argon2';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -8,11 +9,13 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const password = this.generatePassword();
+    const generatedPassword = this.generatePassword();
+    const hashedPassword = await argon2.hash(generatedPassword);
+    // TODO: send an email to the user with the generated password
     return this.prisma.user.create({
       data: {
         ...createUserDto,
-        password,
+        password: hashedPassword,
       },
     });
   }
