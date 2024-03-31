@@ -32,4 +32,4 @@ ENV NODE_ENV=production
 COPY --chown=node:node --from=prod-deps /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 USER node
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
