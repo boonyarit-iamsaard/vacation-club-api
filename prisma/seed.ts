@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient();
@@ -8,6 +8,7 @@ async function main() {
     email: 'arya@stark.com',
     password: await argon2.hash('winteriscoming'),
     name: 'Aray Stark',
+    role: Role.ADMIN,
   };
   const { email } = user;
 
