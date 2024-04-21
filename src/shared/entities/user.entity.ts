@@ -17,6 +17,7 @@ export class UserEntity implements User {
 
   role: Role;
 
+  @Exclude()
   refreshToken: string | null;
 
   createdAt: Date;
