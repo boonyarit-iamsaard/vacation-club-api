@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { TokenPayload } from '../types/token-payload';
+import { AuthenticatedUser } from '../types/payload';
 
 export interface AuthenticatedRequest extends Request {
-  user: TokenPayload;
+  user: AuthenticatedUser;
 }

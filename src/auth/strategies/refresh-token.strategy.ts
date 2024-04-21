@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AuthenticatedUser, TokenPayload } from '../types/payload';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -16,12 +17,16 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  // TODO: add type-safety to the payload and extract the refresh token from the request
-  // for validation with the database or cache
-  validate(_: Request, payload: any) {
+  validate(request: Request, payload: TokenPayload): AuthenticatedUser {
+    const refreshToken = request
+      .get('Authorization')
+      ?.replace('Bearer ', '')
+      .trim();
+
     return {
       sub: payload.sub,
       email: payload.email,
+      refreshToken,
     };
   }
 }

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { PrismaService } from 'nestjs-prisma';
-import { TokenPayload } from './types/token-payload';
+import { AuthenticatedUser, Payload } from './types/payload';
 
 @Injectable()
 export class AuthService {
@@ -13,25 +13,15 @@ export class AuthService {
     private prisma: PrismaService,
   ) {}
 
-  async validateUser(email: string) {
-    const user = await this.prisma.user.findUnique({
+  async findUserByEmail(email: string) {
+    return await this.prisma.user.findUnique({
       where: {
         email,
       },
     });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
   }
 
-  async validatePassword(password: string, hashedPassword: string) {
-    return argon2.verify(hashedPassword, password);
-  }
-
-  async generateTokens(payload: TokenPayload) {
+  async generateTokens(payload: Payload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('ACCESS_TOKEN_SECRET'),
@@ -49,21 +39,80 @@ export class AuthService {
     };
   }
 
-  async login(payload: TokenPayload) {
-    return this.generateTokens(payload);
+  async login(user: AuthenticatedUser) {
+    const payload: Payload = {
+      sub: user.sub,
+      email: user.email,
+    };
+    const tokens = await this.generateTokens(payload);
+
+    await this.updateRefreshToken(user.sub, tokens.refreshToken);
+
+    return tokens;
   }
 
-  async refresh(payload: TokenPayload) {
-    return this.generateTokens(payload);
+  async logout(user: AuthenticatedUser) {
+    return this.prisma.user.update({
+      where: {
+        id: user.sub,
+      },
+      data: {
+        refreshToken: null,
+      },
+    });
   }
 
-  async me(payload: TokenPayload) {
-    const { sub: id } = payload;
-
+  async me(user: AuthenticatedUser) {
     return this.prisma.user.findUnique({
+      where: {
+        id: user.sub,
+      },
+    });
+  }
+
+  async refresh(user: AuthenticatedUser) {
+    if (!user.refreshToken) return null;
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        id: user.sub,
+      },
+    });
+
+    if (!existingUser || !existingUser.refreshToken) return null;
+
+    const isRefreshTokenValid = await this.validateHashedData(
+      user.refreshToken,
+      existingUser.refreshToken,
+    );
+
+    if (!isRefreshTokenValid) return null;
+
+    const payload: Payload = {
+      sub: existingUser.id,
+      email: existingUser.email,
+    };
+    const tokens = await this.generateTokens(payload);
+
+    await this.updateRefreshToken(existingUser.id, tokens.refreshToken);
+
+    return tokens;
+  }
+
+  async updateRefreshToken(id: string, refreshToken: string) {
+    const hashedRefreshToken = await argon2.hash(refreshToken);
+
+    return this.prisma.user.update({
       where: {
         id,
       },
+      data: {
+        refreshToken: hashedRefreshToken,
+      },
     });
+  }
+
+  async validateHashedData(data: string, hashedData: string) {
+    return argon2.verify(hashedData, data);
   }
 }

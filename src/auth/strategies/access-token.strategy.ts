@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { TokenPayload } from '../types/token-payload';
+import { AuthenticatedUser, TokenPayload } from '../types/payload';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(
@@ -15,7 +15,10 @@ export class AccessTokenStrategy extends PassportStrategy(
     });
   }
 
-  validate(payload: TokenPayload) {
-    return payload;
+  validate(payload: TokenPayload): AuthenticatedUser {
+    return {
+      sub: payload.sub,
+      email: payload.email,
+    };
   }
 }

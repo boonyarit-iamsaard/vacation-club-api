@@ -1,7 +1,11 @@
 import {
   Controller,
+  ForbiddenException,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
+  Put,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -23,10 +27,27 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  @UseGuards(AccessTokenAuthGuard)
+  @Put('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(@Req() req: AuthenticatedRequest) {
+    if (await this.authService.logout(req.user)) {
+      return;
+    }
+
+    throw new ForbiddenException();
+  }
+
   @UseGuards(RefreshTokenAuthGuard)
   @Post('refresh')
   async refresh(@Req() req: AuthenticatedRequest) {
-    return this.authService.refresh(req.user);
+    const tokens = await this.authService.refresh(req.user);
+
+    if (!tokens) {
+      throw new ForbiddenException();
+    }
+
+    return tokens;
   }
 
   @UseGuards(AccessTokenAuthGuard)
