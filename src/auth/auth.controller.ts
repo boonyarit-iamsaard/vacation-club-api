@@ -10,12 +10,12 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { UserEntity } from '../shared/entities/user.entity';
 import { AuthService } from './auth.service';
 import { AccessTokenAuthGuard } from './guards/access-token-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenAuthGuard } from './guards/refresh-token-auth.guard';
 import { AuthenticatedRequest } from './interfaces/authenticated-request.interface';
+import { ProfileEntity } from './entities/profile.entity';
 
 @Controller({ version: '1' })
 export class AuthController {
@@ -59,6 +59,6 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    return new UserEntity(user);
+    return new ProfileEntity(user);
   }
 }
